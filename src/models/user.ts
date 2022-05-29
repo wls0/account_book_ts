@@ -1,40 +1,48 @@
-import { Sequelize, Model, DataTypes } from 'sequelize'
+import { sequelize } from './index'
+import { DataTypes, Model } from 'sequelize'
+import Accounts from './accountlist'
 
-interface IUser {
-  userId: string
-  password: string
-  salt: string
-}
-
-export class User extends Model implements IUser {
-  userId!: string
+export class User extends Model {
+  index!: number
+  id!: string
   password!: string
   salt!: string
-
-  readonly createdAt!: Date
-  readonly updatedAt!: Date
 }
 
-const UserModel = (sequelize: Sequelize): typeof User => {
-  User.init({
-    userId: {
+const Users = sequelize.define<User>(
+  'user',
+  {
+    index: {
+      type: DataTypes.INTEGER,
+      allowNull: false,
+      autoIncrement: true,
+      primaryKey: true,
+    },
+    id: {
       type: DataTypes.STRING,
-      allowNull: false
+      unique: true,
+      allowNull: false,
     },
     password: {
       type: DataTypes.STRING,
-      allowNull: false
+      allowNull: false,
     },
     salt: {
       type: DataTypes.STRING,
-      allowNull: false
-    }
-  }, {
-    tableName: 'user',
-    modelName: 'user',
-    sequelize
-  })
-  return User
-}
+      allowNull: false,
+    },
+  },
+  {
+    timestamps: true,
+    freezeTableName: true,
+    tableName: 'users',
+  },
+)
 
-export { UserModel }
+Users.hasOne(Accounts, {
+  sourceKey: 'index',
+  foreignKey: 'userIndex',
+  onDelete: 'CASCADE',
+})
+
+export default Users

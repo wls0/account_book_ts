@@ -1,38 +1,35 @@
-import { Dialect, Sequelize } from 'sequelize'
-import { AccountModel } from './account'
-import { UserModel } from './user'
+import { Sequelize } from 'sequelize'
 
-interface IDBconfig{
+const name = process.env.DB_NAME
+const password = process.env.DB_PASSWORD
+const DB = process.env.DB
+
+interface IConfig {
   username: string
   password: string
   database: string
   host: string
-  dialect: Dialect
+  dialect: string
 }
-const env: NodeJS.ProcessEnv = process.env
-const username = env.DB_NAME
-const password = env.DB_PWD
-const database = env.DB
-const host = env.DB_HOST
-const dialect: Dialect = 'mysql'
 
-const config: IDBconfig = {
-  username,
+const config: IConfig = {
+  username: name,
   password,
-  database,
-  host,
-  dialect
+  database: DB,
+  host: 'localhost',
+  dialect: 'mysql',
 }
 
-const sequelize = new Sequelize(config.database, config.username, config.password, config)
-
-const DB = {
-  sequelize,
-  Account: AccountModel(sequelize),
-  User: UserModel(sequelize)
-}
-
-DB.User.hasMany(DB.Account, { sourceKey: 'userId' })
-DB.Account.belongsTo(DB.User, { foreignKey: 'userIndex' })
-
-export default DB
+export const sequelize = new Sequelize(
+  config.database,
+  config.username,
+  config.password,
+  {
+    username: name,
+    password,
+    database: DB,
+    host: config.host,
+    dialect: 'mysql',
+    timezone: '+09:00',
+  },
+)

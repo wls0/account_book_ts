@@ -1,10 +1,16 @@
 declare namespace NodeJS {
   interface ProcessEnv {
-    JWTSECRET: string
-    DB_NAME: string
-    DB_PWD: string
-    DB: string
-    DB_HOST: string
-    DB_DIALECT: string
+    DB: string;
+    JWTSECRET: string;
+    DB_NAME: string;
+    DB_PASSWORD: string;
+    NODE_ENV: string;
+    JWT: string;
+  }
+}
+
+declare namespace Express {
+  interface User {
+    index: number;
   }
 }
