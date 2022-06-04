@@ -1,13 +1,25 @@
 import crypto from 'crypto'
-import { Request, Response } from 'express'
+import { NextFunction, Request, Response } from 'express'
 
-export const ERROR = (err: any, req: Request, res: Response) => {
-  res.status(err.statusCode).json({
-    code: err.statusCode,
+export const ERROR = (
+  err: any,
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  let statusCode
+  if (err.statusCode === null) {
+    statusCode = 500
+  } else {
+    statusCode = err.statusCode
+  }
+  res.status(statusCode).json({
+    code: statusCode,
     result: false,
     msg: err.message,
     data: '',
   })
+  next()
 }
 
 export const Send = (res: Response, data: any) => {

@@ -1,5 +1,5 @@
 import 'dotenv/config'
-import express from 'express'
+import express, { NextFunction, Request, Response } from 'express'
 import logger from 'morgan'
 import compression from 'compression'
 import cors from 'cors'
@@ -47,14 +47,13 @@ app.use(
   accountRouter,
 )
 
-app.use(() => {
-  throw httpError(404)
+app.use((req: Request, res: Response, next: NextFunction) => {
+  next(httpError(404))
 })
 
 app.use(ERROR)
-
 app.listen(3000, () => {
   console.log('server start!')
 })
 
-module.exports = app
+export default app
