@@ -34,7 +34,7 @@ export const LocalPassport = passport.use(
 export const JwtPassport = passport.use(
   new JwtStrategy(
     {
-      jwtFromRequest: ExtractJwt.fromHeader('authorization'),
+      jwtFromRequest: ExtractJwt.fromAuthHeaderAsBearerToken(),
       secretOrKey: JWT,
     },
     async (payload, done) => {
