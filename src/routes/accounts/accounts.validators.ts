@@ -32,7 +32,7 @@ const Card = param('card')
   .notEmpty()
   .isString()
 
-module.exports = {
+export {
   Index,
   DateBody,
   DateParam,

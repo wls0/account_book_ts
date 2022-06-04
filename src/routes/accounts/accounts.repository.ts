@@ -2,22 +2,23 @@ import Accounts from '../../models/accountlist'
 import sequelize from 'sequelize'
 const Op = sequelize.Op
 
-type card = {
-  card: 'cash' | 'shinhan' | 'samsung' | 'hyundai' | 'woori' | 'lotte' | 'kb'
-}
-
-interface IAccount extends card {
+interface IAccount {
   index?: number
   userIndex: number
   date: string
   bigCategory: string
   smallCategory: string
   cost: number
+  card: string
 }
 
-interface IAccountSum extends card {
+interface IAccountSum {
   userIndex: number
   date: string
+}
+
+interface IAccountSelectList extends IAccountSum {
+  card: string
 }
 
 // date 형식은 YYYY-MM-DD
@@ -279,7 +280,7 @@ export const RevenueCost = async (data: IAccountSum) => {
 }
 
 // 날짜 별 사용 카드별 상세 목록 확인
-export const UseCardList = async (data: IAccountSum) => {
+export const UseCardList = async (data: IAccountSelectList) => {
   const { userIndex, card, date } = data
   const total = await Accounts.findAll({
     where: {

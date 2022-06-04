@@ -1,4 +1,5 @@
 import httpError from 'http-errors'
+import { Request, Response, NextFunction } from 'express'
 import { Send } from '../../lib/lib'
 import {
   WriteAccount,
@@ -17,9 +18,13 @@ import {
 } from './accounts.repository'
 
 // 가계부 생성
-const CreateAccount = async (req, res, next) => {
+const CreateAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userIndex = req.user
+    const userIndex = Number(req.user)
     const { date } = req.params
     const { bigCategory, smallCategory, card, cost } = req.body
     const result = await WriteAccount({
@@ -41,10 +46,14 @@ const CreateAccount = async (req, res, next) => {
 }
 
 // 가계부 수정
-const UpdateAccount = async (req, res, next) => {
+const UpdateAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userIndex = req.user
-    const { index } = req.params
+    const userIndex = Number(req.user)
+    const index = Number(req.params.index)
     const { bigCategory, smallCategory, card, cost, date } = req.body
     const check = await SelectAccount({ userIndex, index })
     if (check) {
@@ -71,10 +80,14 @@ const UpdateAccount = async (req, res, next) => {
 }
 
 // 가계부 삭제
-const DeleteAccount = async (req, res, next) => {
+const DeleteAccount = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userIndex = req.user
-    const { index } = req.params
+    const userIndex = Number(req.user)
+    const index = Number(req.params.index)
     const check = await SelectAccount({ userIndex, index })
     if (check) {
       const result = await RemoveAccount({
@@ -94,9 +107,13 @@ const DeleteAccount = async (req, res, next) => {
 }
 
 // 가계부 금액확인
-const DayAccountFind = async (req, res, next) => {
+const DayAccountFind = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
   try {
-    const userIndex = req.user
+    const userIndex = Number(req.user)
     const { date } = req.params
 
     const cash = await CashCost({ userIndex, date })
@@ -127,30 +144,38 @@ const DayAccountFind = async (req, res, next) => {
   }
 }
 
-const CardAccountFind = async (req, res, next) => {
-  const userIndex = req.user
-  const { card, date } = req.params
-  let total
-  const useList = await UseCardList({ userIndex, card, date })
-  if (card === 'cash') {
-    total = await CashCost({ userIndex, date })
-  } else if (card === 'shinhan') {
-    total = await ShinhanCost({ userIndex, date })
-  } else if (card === 'samsung') {
-    total = await SamsungCost({ userIndex, date })
-  } else if (card === 'hyundai') {
-    total = await HyundaiCost({ userIndex, date })
-  } else if (card === 'woori') {
-    total = await WooriCost({ userIndex, date })
-  } else if (card === 'lotte') {
-    total = await LotteCost({ userIndex, date })
-  } else if (card === 'kb') {
-    total = await KbCost({ userIndex, date })
+const CardAccountFind = async (
+  req: Request,
+  res: Response,
+  next: NextFunction,
+) => {
+  try {
+    const userIndex = Number(req.user)
+    const { card, date } = req.params
+    let total
+    const useList = await UseCardList({ userIndex, card, date })
+    if (card === 'cash') {
+      total = await CashCost({ userIndex, date })
+    } else if (card === 'shinhan') {
+      total = await ShinhanCost({ userIndex, date })
+    } else if (card === 'samsung') {
+      total = await SamsungCost({ userIndex, date })
+    } else if (card === 'hyundai') {
+      total = await HyundaiCost({ userIndex, date })
+    } else if (card === 'woori') {
+      total = await WooriCost({ userIndex, date })
+    } else if (card === 'lotte') {
+      total = await LotteCost({ userIndex, date })
+    } else if (card === 'kb') {
+      total = await KbCost({ userIndex, date })
+    }
+    Send(res, { useList, total })
+  } catch (E: any) {
+    next(E)
   }
-  Send(res, { useList, total })
 }
 
-module.exports = {
+export {
   CreateAccount,
   UpdateAccount,
   DeleteAccount,
